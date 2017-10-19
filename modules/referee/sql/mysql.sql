@@ -1,3 +1,21 @@
+## 
+##  Referee URL Lister with Site Thumbnails Engines
+## 
+## You may not change or alter any portion of this comment or credits
+## of supporting developers from this source code or any supporting source code
+## which is considered copyrighted (c) material of the original comment or credit authors.
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+## 
+## @copyright   	The XOOPS Project http://fonts2web.org.uk
+## @license     	General Public License version 3 (http://labs.coop/briefs/legal/general-public-licence/13,3.html)
+## @author      	Simon Roberts (wishcraft) <wishcraft@users.sourceforge.net>
+## @subpackage  	referee
+## @description 	Referee URL Lister with Site Thumbnails Engines
+## @version		    1.0.1
+## @link			http://internetfounder.wordpress.com
+## 
 
 CREATE TABLE `referee_cronjobs` (
   `id` mediumint(96) NOT NULL AUTO_INCREMENT,
@@ -40,6 +58,16 @@ CREATE TABLE `referee_hostnames` (
   KEY `SEARCH` (`hostname`,`resolved`,`ip`,`port`,`id`,`http`,`https`,`hash`,`created`,`last`,`key`) USING BTREE KEY_BLOCK_SIZE=16
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `referee_hostnames_useragents` (
+  `id` mediumint(128) NOT NULL,
+  `hostname_id` mediumint(16) NOT NULL DEFAULT '0',
+  `useragent_id` mediumint(16) NOT NULL DEFAULT '0',
+  `type` enum('Robot','Unknown') NOT NULL DEFAULT 'Unknown',
+  `when` int(13) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `SEARCH` (`hostname_id`,`useragent_id`,`type`,`when`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `referee_images` (
   `id` mediumint(128) NOT NULL AUTO_INCREMENT,
   `type` enum('Thumbnail','Icon','Unknown') NOT NULL DEFAULT 'Unknown',
@@ -64,10 +92,11 @@ CREATE TABLE `referee_keywords` (
   `referees` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `hitswith` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `hitswithout` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
+  `browsers` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
+  `robots` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   PRIMARY KEY (`id`),
   KEY `SEARCH` (`key`,`keyword`,`hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
 CREATE TABLE `referee_keywords_hostnames` (
   `id` mediumint(192) NOT NULL AUTO_INCREMENT,
@@ -97,7 +126,7 @@ CREATE TABLE `referee_referees` (
   `referees` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `robots` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `browsers` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
-  `mimetypes` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
+  `agents` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `hitswith` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `hitswithout` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `hitsasbot` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
@@ -134,6 +163,7 @@ CREATE TABLE `referee_thumbnails_configs` (
 CREATE TABLE `referee_thumbnails_engines` (
   `id` int(8) NOT NULL AUTO_INCREMENT,
   `active` enum('Yes','No') NOT NULL DEFAULT 'No',
+  `weight` int(4) NOT NULL DEFAULT '0',
   `configs` int(8) NOT NULL DEFAULT '0',
   `folder` varchar(64) NOT NULL DEFAULT '',
   `title` varchar(64) NOT NULL DEFAULT '',
@@ -153,8 +183,7 @@ CREATE TABLE `referee_urls` (
   `icon_image_id` mediumint(128) NOT NULL DEFAULT '0',
   `hostname_id` mediumint(16) NOT NULL DEFAULT '0',
   `uri` tinytext NOT NULL,
-  `key` varchar(32) NOT NULL DEFAULT '',
-  `key_uri` varchar(32) NOT NULL DEFAULT '',
+  `key` varchar(44) NOT NULL DEFAULT '',
   `pagetitle` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(255) NOT NULL DEFAULT '',
   `keyword_ids` mediumtext,
@@ -173,6 +202,16 @@ CREATE TABLE `referee_urls` (
   PRIMARY KEY (`id`),
   KEY `SEARCH` (`key`,`key_uri`,`id`,`created`,`lasthits`,`hash`,`bots`,`referees`,`hitswith`,`hitswithout`,`hitsasbot`) USING BTREE,
   KEY `TIMING` (`hash`,`created`,`lasthits`,`fetching`,`fetched`,`key_uri`,`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `referee_urls_useragents` (
+  `id` mediumint(128) NOT NULL,
+  `url_id` mediumint(32) NOT NULL DEFAULT '0',
+  `useragent_id` mediumint(16) NOT NULL DEFAULT '0',
+  `type` enum('Robot','Unknown') NOT NULL DEFAULT 'Unknown',
+  `when` int(13) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `SEARCH` (`url_id`,`useragent_id`,`type`,`when`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `referee_useragents` (

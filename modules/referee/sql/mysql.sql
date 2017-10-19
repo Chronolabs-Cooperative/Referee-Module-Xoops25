@@ -1,15 +1,31 @@
 
+CREATE TABLE `referee_cronjobs` (
+  `id` mediumint(96) NOT NULL AUTO_INCREMENT,
+  `mode` enum('hostnames','urls','others') NOT NULL DEFAULT 'others',
+  `type` enum('meta','icon','thumbnail','removing-junk','') NOT NULL DEFAULT '',
+  `ident` mediumint(32) NOT NULL DEFAULT '0',
+  `execute` int(13) NOT NULL DEFAULT '0',
+  `executed` int(13) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `SEARCH` (`mode`,`type`,`ident`,`execute`,`executed`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `referee_hostnames` (
+  `id` mediumint(16) NOT NULL AUTO_INCREMENT,
+  `thumb_image_id` mediumint(128) NOT NULL DEFAULT '0',
+  `icon_image_id` mediumint(128) NOT NULL DEFAULT '0',
+  `pagetitle` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `keyword_ids` mediumtext,
   `key` varchar(44) NOT NULL DEFAULT '',
   `hostname` varchar(255) NOT NULL DEFAULT '',
   `resolved` varchar(255) NOT NULL DEFAULT '',
   `ip` varchar(128) NOT NULL DEFAULT '',
   `port` int(6) NOT NULL DEFAULT '0',
-  `id` mediumint(16) NOT NULL AUTO_INCREMENT,
   `http` enum('Yes','No') NOT NULL DEFAULT 'No',
   `https` enum('Yes','No') NOT NULL DEFAULT 'No',
   `hash` varchar(12) NOT NULL DEFAULT '',
+  `clicks` int(24) NOT NULL DEFAULT '0',
   `urls` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `referees` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
   `robots` int(24) unsigned zerofill NOT NULL DEFAULT '000000000000000000000000',
@@ -27,6 +43,7 @@ CREATE TABLE `referee_hostnames` (
 CREATE TABLE `referee_images` (
   `id` mediumint(128) NOT NULL AUTO_INCREMENT,
   `type` enum('Thumbnail','Icon','Unknown') NOT NULL DEFAULT 'Unknown',
+  `mime` enum('image/vnd.microsoft.icon', 'image/png', 'image/jpg', 'image/gif', 'Unknown') NOT NULL DEFAULT 'Unknown',
   `key` varchar(44) NOT NULL DEFAULT '',
   `hash` varchar(12) NOT NULL DEFAULT '',
   `hits` int(24) NOT NULL DEFAULT '0',
